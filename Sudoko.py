@@ -1,3 +1,4 @@
+from collections import defaultdict
 board = [
     [0, 0, 6, 0, 0, 3, 4, 0, 10, 0 ],
     [2, 6, 4, 0, 0, 0, 0, 0, 9, 0 ],
@@ -10,7 +11,51 @@ board = [
     [1, 3, 0, 6, 0, 0, 5, 0, 0, 2 ],
     [0, 5, 0, 9, 6, 2, 0, 0, 8, 0]
 ]
+rowc=defaultdict(list)
+colc=defaultdict(list)
+rowcoldata=defaultdict(list)
+def rowdata(bo):
+    for r in range(len(bo)):
+        j=0
+        while(j<len(bo)):
+            if(bo[r][j]!=0):
+                rowc[r].append(bo[r][j])
+                j+=1
+            else:
+                j+=1
+    for k,v in rowc.items():
+        print(k,v)
 
+def coldata(bo):
+    for r in range(len(bo)):
+        j=0
+        while(j<len(bo)):
+            if(bo[j][r]!=0):
+                colc[r].append(bo[j][r])
+                j+=1
+            else:
+                j+=1
+    for k,v in colc.items():
+        print(k,v)
+def show():
+    p=[]
+    q=[]
+    r=[]
+    for k in rowc.keys():
+        p = rowc.get(k).copy()
+        for j in colc.keys():
+            q=colc.get(j).copy()
+            r=p+q
+            for rr in r:
+                rowcoldata[k,j].append(rr)
+
+            rowcoldata[k,j].sort()
+            list(set(rowcoldata[k,j]))
+            r.clear()
+            q.clear()
+        p.clear()
+    for k,v in rowcoldata.items():
+        print(k,v)
 
 def solve(bo):
     find = find_empty(bo)
@@ -67,6 +112,15 @@ def find_empty(bo):
     return None
 
 print_board(board)
+print("___________________")
+
+rowdata(board)
+print("___________________")
+coldata(board)
+print("___________________")
+show()
+#coldata(board)
 solve(board)
+print("___________________")
 print("___________________")
 print_board(board)
