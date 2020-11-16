@@ -1,22 +1,24 @@
 from collections import defaultdict
-from itertools import permutations
 board = [
-    [7,8,0,4,0,0,1,2,0],
-    [6,0,0,0,7,5,0,0,9],
-    [0,0,0,6,0,1,0,7,8],
-    [0,0,7,0,4,0,2,6,0],
-    [0,0,1,0,5,0,9,3,0],
-    [9,0,4,0,6,0,0,0,5],
-    [0,7,0,3,0,0,0,1,2],
-    [1,2,0,0,0,7,4,0,0],
-    [0,4,9,2,0,6,0,0,7]
+[0, 0, 6, 0, 0, 3, 4, 0, 10, 0 ],
+[2, 6, 4, 0, 0, 0, 0, 0, 9, 0 ],
+[0, 2, 10, 0, 0, 0, 0, 0, 5, 9 ],
+[10, 1, 5, 4, 2, 0, 0, 0, 0, 0 ],
+[0, 0, 0, 0, 1, 9, 8, 4, 0, 0 ],
+[0, 0, 3, 2, 9, 0, 0, 1, 0, 0],
+[6, 0, 0, 0, 0, 7, 0, 10, 0, 5 ],
+[0, 0, 0, 0, 0, 8, 6, 5, 0, 7 ],
+[1, 3, 0, 6, 0, 0, 5, 0, 0, 2 ],
+[0, 5, 0, 9, 6, 2, 0, 0, 8, 0 ]
 ]
+li=[]
+faka=defaultdict(list)
+for i in range(1,len(board)+1):
+    li.append(i)
+file=open("balchal","w")
 rowc=defaultdict(list)
 colc=defaultdict(list)
 rowcoldata=defaultdict(list)
-row = []
-col=[]
-getrow=[]
 def rowdata(bo):
     for r in range(len(bo)):
         j=0
@@ -27,8 +29,15 @@ def rowdata(bo):
             else:
                 j+=1
     for k,v in rowc.items():
-       print(k,v)
+        print(k,v)
+def zero(bo):
+    count=0
+    for i in range(len(bo)):
+        for j in range(len(bo[0])):
+            if(bo[i][j]==0):
+               return (i,j)
 
+    return None
 def coldata(bo):
     for r in range(len(bo)):
         j=0
@@ -38,6 +47,14 @@ def coldata(bo):
                 j+=1
             else:
                 j+=1
+    for k,v in colc.items():
+        print(k,v)
+def duplicacy(li1,li2):
+    for num in li2:
+        if(li1==num):
+            return False
+    return True
+
 
 def show():
     p=[]
@@ -49,92 +66,80 @@ def show():
             q=colc.get(j).copy()
             r=p+q
             for rr in r:
-                rowcoldata[k,j].append(rr)
-
+                if duplicacy(rr,rowcoldata[k,j]):
+                    rowcoldata[k,j].append(rr)
             rowcoldata[k,j].sort()
-            list(set(rowcoldata[k,j]))
             r.clear()
             q.clear()
         p.clear()
+    #for k,v in rowcoldata.items():
+        #print(k,v)
+def advance(bo):
+    v=[]
+    p=[]
+    q=[]
+    r=[]
+    element=[]
+    for m in range(len((bo))):
+        for n in range(len(bo[0])):
+            if(bo[m][n]==0):
+                p=rowc.get(m).copy()
+                q=colc.get(n).copy()
+                r=p+q
+                #print(r)
+                element=diff(li,r)
+                for e in element:
+                    faka[m,n].append(e)
+    for k, v in faka.items():
+        print(k,v)
+        if(len(v)==1):
+            s=k[0]
+            t=k[1]
+            man=v[0]
+            bo[s][t]=man
+    solve(bo)
+def solve(bo):
+    for i in range(len(bo)):
+        for j in range(len(bo[0])):
+            file.write(str(bo[i][j]))
+            file.write(' ')
+        file.write('\n')
+    file.write('\n')
+    find = find_empty(bo)
+    if not find:
+        return True
+    else:
+        row, col = find
 
-def solution(bo):
-    li=[]
-    perm=[]
-    row = []
-    getrow = []
-    for l in range(1,len(bo)+1):
-        li.append(l)
-    for k in rowc.keys():
-        row=[]
-        getrow=[]
-        row.clear()
-        getrow.clear()
-        row=rowc.get(k).copy()
-        getrow=diff(li,row)
-        perm=permutations(getrow)
-        matchcol((list(perm)),bo,k)
+    for i in range(1,len(bo[0])+1):
+        if valid(bo, i, (row, col)):
+            bo[row][col] = i
 
+            if solve(bo):
+                return True
 
+            bo[row][col] = 0
+
+    return False
 def diff(li1, li2):
     li_dif = [i for i in li1 + li2 if i not in li1 or i not in li2]
     return li_dif
-def matchcol(perm,bo,r):
-    for c in range(len(bo[0])):
-        if(bo[r][c]==0):
-            col.append(c)
-    print("Column No ",col)
-    valid(perm,col,r,bo)
-    col.clear()
-
-
-
-def valid(per,li,rownum,bo):
-    index=0
-    flag=0
-    tupi=[]
-    for tup in per:
-        print("Tuple : ",tup)
-        for t in tup:
-            print("Data :",t)
-            if(checkcol(t,li[index])==True):
-                index=index+1
-                print("Index ",index)
-                flag=flag+1
-                tupi.append(t)
-            else:
-                index=0
-                tupi.clear()
-                flag=0
-                break
-        if(index==len(li)):
-            break
-    print("Rslt ",tupi)
-    index=0
-    for column in li:
-        bo[rownum][column] = tupi[index]
-        colc[column].append(tupi[index])
-        index+=1
-    for rlt in tupi:
-        rowc[rownum].append(rlt)
-    print(rowc.get(rownum))
-    for column in li:
-        print(colc.get(column))
-    for ba in range(len(bo)):
-        for cha in range(len(bo[0])):
-            print(bo[ba][cha],end=" ")
-        print()
-
-
-
-
-
-def checkcol(num,column):
-    columnlist=[]
-    columnlist=colc.get(column).copy()
-    for colnum in columnlist:
-        if(colnum==num):
+def valid(bo, num, pos):
+    # Check row
+    for i in range(len(bo[0])):
+        p=pos[0]
+        if bo[p][i] == num :
             return False
+
+    # Check column
+    for i in range(len(bo)):
+        q=pos[1]
+        if bo[i][q] == num :
+            return False
+
     return True
+
+
 def print_board(bo):
     for i in range(len(bo)):
 
@@ -157,13 +162,15 @@ def find_empty(bo):
 print_board(board)
 print("___________________")
 
+print("___________________")
 rowdata(board)
 print("___________________")
 coldata(board)
 print("___________________")
 show()
-solution(board)
-
+advance(board)
+print("___________________")
+#coldata(board)
 #solve(board)
 print("___________________")
 print("___________________")
