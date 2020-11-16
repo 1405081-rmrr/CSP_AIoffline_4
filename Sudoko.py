@@ -1,12 +1,12 @@
 from collections import defaultdict
 board = [
-[0, 0, 6, 0, 0, 3, 4, 0, 10, 0 ],
+[0, 0, 6, 0, 0, 3, 4, 0, 10, 0],
 [2, 6, 4, 0, 0, 0, 0, 0, 9, 0 ],
 [0, 2, 10, 0, 0, 0, 0, 0, 5, 9 ],
 [10, 1, 5, 4, 2, 0, 0, 0, 0, 0 ],
 [0, 0, 0, 0, 1, 9, 8, 4, 0, 0 ],
 [0, 0, 3, 2, 9, 0, 0, 1, 0, 0],
-[6, 0, 0, 0, 0, 7, 0, 10, 0, 5 ],
+[6, 0, 0, 0, 0, 7, 0, 10, 0, 5],
 [0, 0, 0, 0, 0, 8, 6, 5, 0, 7 ],
 [1, 3, 0, 6, 0, 0, 5, 0, 0, 2 ],
 [0, 5, 0, 9, 6, 2, 0, 0, 8, 0 ]
@@ -28,8 +28,8 @@ def rowdata(bo):
                 j+=1
             else:
                 j+=1
-    for k,v in rowc.items():
-        print(k,v)
+    #for k,v in rowc.items():
+        #print(k,v)
 def zero(bo):
     count=0
     for i in range(len(bo)):
@@ -47,8 +47,8 @@ def coldata(bo):
                 j+=1
             else:
                 j+=1
-    for k,v in colc.items():
-        print(k,v)
+    #for k,v in colc.items():
+        #print(k,v)
 def duplicacy(li1,li2):
     for num in li2:
         if(li1==num):
@@ -91,13 +91,52 @@ def advance(bo):
                 for e in element:
                     faka[m,n].append(e)
     for k, v in faka.items():
-        print(k,v)
         if(len(v)==1):
             s=k[0]
             t=k[1]
             man=v[0]
+            rowc[s].append(man)
+            colc[t].append(man)
             bo[s][t]=man
-    solve(bo)
+            faka[s, t].remove(man)
+    print("after inserting........")
+    for k,v in rowc.items():
+        print(k,v)
+    print()
+    for k,v in colc.items():
+        print(k,v)
+    print()
+    faka.clear()
+    records(bo)
+    #solve(bo)
+def records(bo):
+    flag = 0
+    v = []
+    p = []
+    q = []
+    r = []
+    element = []
+    for m in range(len((bo))):
+        for n in range(len(bo[0])):
+            if (bo[m][n] == 0):
+                p = rowc.get(m).copy()
+                q = colc.get(n).copy()
+                r = p + q
+                # print(r)
+                element = diff(li, r)
+                for e in element:
+                    faka[m, n].append(e)
+    for k,v in faka.items():
+        if(len(v)==1):
+            flag=1
+            break
+    if(flag==1):
+        faka.clear()
+        advance(bo)
+    elif(flag==0):
+        solve(bo)
+
+
 def solve(bo):
     for i in range(len(bo)):
         for j in range(len(bo[0])):
