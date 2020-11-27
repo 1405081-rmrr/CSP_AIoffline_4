@@ -1,10 +1,12 @@
 from collections import defaultdict
+from random import shuffle
 import importlib
 from maximumDegree import rzerocount,czerocount,deg,maxddegreecount,maxddegreeempty
 #from Domdeg import domdegfunc,domdegratio
 import time
 start=time.time()
 li=[]
+blacklist=[]
 count=0
 fcount=0
 superlist=[]
@@ -84,13 +86,16 @@ def diff(li1, li2):
     li_dif = [i for i in li1 + li2 if i not in li1 or i not in li2]
     return li_dif
 def solve(bo):
-    global tnode
     global fcount
+    global tnode
     find = find_empty(bo)
+    bilai = empty_initial()
     if not find:
         return True
-    else:
+    elif (not bilai):
         row, col = find
+    else:
+        row, col = bilai
 
     for i in range(1,len(bo)+1):
         if valid(bo, i, (row, col)):
@@ -227,6 +232,14 @@ def empty():
         i=val[0]
         j=val[1]
     return (i,j)
+def empty_initial():
+    if(len(blacklist)==0):
+        return None
+    else:
+        val=blacklist.pop(0)
+        i=val[0]
+        j=val[1]
+    return (i,j)
 def valid(bo, num, pos):
     # Check row
     for i in range(len(bo[0])):
@@ -251,6 +264,13 @@ def print_board(bo):
             else:
                 #print(str(bo[i][j]) +" ",end="")
                 print(bo[i][j],"",end="")
+def emptyslot(bo):
+    for i in range(len(bo)):
+        for j in range(len(bo)):
+            if(bo[i][j]==0):
+                blacklist.append((i,j))
+    shuffle(blacklist)
+
 
 def find_empty(bo):
     for i in range(len(bo)):
@@ -262,13 +282,14 @@ def find_empty(bo):
     return None
 
 #print_board(board)
-with open('input2.txt', 'r') as f:
+with open('input4.txt', 'r') as f:
     board = [[int(num) for num in line.split(',')] for line in f]
 print()
 print("1. BT+Random 2. BT+SDF 3. BT+MaxDDegree 4.BT+Domddeg")
 n=int(input())
 if(n==1):
     boardlen(board)
+    emptyslot(board)
     solve(board)
     print("BT+Random")
     print_board(board)
