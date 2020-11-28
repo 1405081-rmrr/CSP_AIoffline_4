@@ -38,8 +38,6 @@ def maxddegreecount(bo):
         maxlist.append(k[0])
     #for k,v in maxddegree.items():
         #print(k,v)
-def maxddegreecountreturn():
-    return maxddegree.items()
 def deg():
     return maxddegree.items()
 def maxddegreeempty():

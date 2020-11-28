@@ -1,7 +1,8 @@
 from collections import defaultdict
 from random import shuffle
 import importlib
-from maximumDegree import rzerocount,czerocount,deg,maxddegreecount,maxddegreeempty,maxddegreecountreturn
+from maximumDegree import rzerocount,czerocount,deg,maxddegreecount,maxddegreeempty
+#from Domdeg import domdegfunc,domdegratio
 import time
 start=time.time()
 li=[]
@@ -15,8 +16,7 @@ degg=[]
 rat=[]
 ratio=defaultdict()
 ratmin=[]
-domdegreetie=defaultdict()
-domddegreetie=defaultdict()
+
 def boardlen(board):
     for i in range(1,len(board)+1):
         li.append(i)
@@ -26,7 +26,6 @@ rowcoldata=defaultdict(list)
 location=defaultdict()
 sort_orders=defaultdict()
 maxddegree=defaultdict()
-domdegree=[]
 count=0
 def rowdata(bo):
     for r in range(len(bo)):
@@ -75,20 +74,11 @@ def show(bo):
     for k,v in rowcoldata.items():
         #print(k,v)
         location[k]=len(v)
-
     print()
     sort_orders = sorted(location.items(), key=lambda x: x[1], reverse=False)
     #sort_orders = sorted(location.items(), key=lambda x: x[1], reverse=False)
     for x in sort_orders:
         superlist.append(x[0])
-    print()
-def domainmaxdegreetie():
-    domdegreetie=maxddegreecountreturn()
-    for (k,v),v1 in zip(location.items(),domdegreetie):
-        domddegreetie[k]=(v,v1[1])
-    sort_orders=sorted(domddegreetie.items(), key=lambda x: (x[1][0],x[1][1]), reverse=False)
-    for x in sort_orders:
-        domdegree.append(x[0])
 def dom():
     return location.items()
 
@@ -96,23 +86,21 @@ def diff(li1, li2):
     li_dif = [i for i in li1 + li2 if i not in li1 or i not in li2]
     return li_dif
 def solve(bo):
-
     global fcount
     global tnode
-    tnode += 1
     find = find_empty(bo)
-    emfound = empty_initial()
+    bilai = empty_initial()
     if not find:
         return True
-    elif (not emfound):
+    elif (not bilai):
         row, col = find
     else:
-        row, col = emfound
+        row, col = bilai
 
     for i in range(1,len(bo)+1):
         if valid(bo, i, (row, col)):
             bo[row][col] = i
-            #tnode+=1
+            tnode+=1
 
 
             if solve(bo):
@@ -129,17 +117,16 @@ def countback():
     count=count+1
     return count
 def solveBT_SDF(bo):
-
     global fcount
     global tnode
     find = find_empty(bo)
-    emfind=empty()
+    bilai=empty()
     if not find:
         return True
-    elif(not emfind):
+    elif(not bilai):
         row,col=find
     else:
-        row,col=emfind
+        row,col=bilai
 
 
     for i in range(1,len(bo)+1):
@@ -159,15 +146,14 @@ def solveBT_SDF(bo):
 def solveBT_MaxDDegree(bo):
     global fcount
     global tnode
-    #tnode += 1
     find = find_empty(bo)
-    emfind=maxddegreeempty()
+    bilai=maxddegreeempty()
     if not find:
         return True
-    elif(not emfind):
+    elif(not bilai):
         row,col=find
     else:
-        row,col=emfind
+        row,col=bilai
 
 
 
@@ -213,13 +199,13 @@ def solveBT_Domddeg(bo):
     global fcount
     global tnode
     find = find_empty(bo)
-    emfind=domdegratio()
+    bilai=domdegratio()
     if not find:
         return True
-    elif(not emfind):
+    elif(not bilai):
         row,col=find
     else:
-        row,col=emfind
+        row,col=bilai
 
 
 
@@ -237,47 +223,12 @@ def solveBT_Domddeg(bo):
     fcount = countback()
     tnode += 1
     return False
-def solveBT_Brelaz(bo):
-    global fcount
-    global tnode
-    find = find_empty(bo)
-    emfind=emptyBrelaz()
-    if not find:
-        return True
-    elif(not emfind):
-        row,col=find
-    else:
-        row,col=emfind
 
-
-
-    for i in range(1,len(bo)+1):
-        if valid(bo, i, (row, col)):
-            bo[row][col] = i
-            tnode += 1
-
-
-            if solveBT_Brelaz(bo):
-                return True
-
-            bo[row][col] = 0
-            #fcount=countback()
-    fcount = countback()
-    tnode += 1
-    return False
 def empty():
     if(len(superlist)==0):
         return None
     else:
         val=superlist.pop(0)
-        i=val[0]
-        j=val[1]
-    return (i,j)
-def emptyBrelaz():
-    if(len(domdegree)==0):
-        return None
-    else:
-        val=domdegree.pop(0)
         i=val[0]
         j=val[1]
     return (i,j)
@@ -331,10 +282,10 @@ def find_empty(bo):
     return None
 
 #print_board(board)
-with open('input5.txt', 'r') as f:
+with open('input4.txt', 'r') as f:
     board = [[int(num) for num in line.split(',')] for line in f]
 print()
-print("1. BT+Random 2. BT+SDF 3. BT+MaxDDegree 4.BT+Domddeg 5.BT+Brelaz")
+print("1. BT+Random 2. BT+SDF 3. BT+MaxDDegree 4.BT+Domddeg")
 n=int(input())
 if(n==1):
     boardlen(board)
@@ -362,7 +313,6 @@ if(n==3):
     rzerocount(board)
     czerocount(board)
     maxddegreecount(board)
-    show(board)
     #deg()
     solveBT_MaxDDegree(board)
     print("BT+MaxDyanmicDegree")
@@ -380,19 +330,5 @@ if(n==4):
     print("Backtracking counted for DomDDeg : ", fcount)
     print("Nodes : {}".format(tnode))
 
-if(n==5):
-    boardlen(board)
-    rowdata(board)
-    coldata(board)
-    show(board)
-    rzerocount(board)
-    czerocount(board)
-    maxddegreecount(board)
-    domainmaxdegreetie()
-    solveBT_Brelaz(board)
-    print("BT+Brelaz")
-    print_board(board)
-    print("Backtracking counted for Brelaz : ", fcount)
-    print("Nodes : {}".format(tnode))
-print("Time Taken {}".format(time.time() - start))
 
+print("Time Taken {}".format(time.time() - start))
